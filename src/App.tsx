@@ -1,14 +1,17 @@
 import React from 'react';
 import './App.css';
 import Header from "./components/Header";
-import Home from "./pages/Home";
+import HomePage from "./pages/HomePage";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
     <>
-        <Header/>
-        <Home/>
-      Hello
+        {/*<Header/>*/}
+        {/*<HomePage/>*/}
+        {/*<RegisterPage/>*/}
+        <LoginPage/>
     </>
   );
 }

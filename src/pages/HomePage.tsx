@@ -14,7 +14,7 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 
-const Home = () => {
+const HomePage = () => {
     return (
         <Container maxWidth={"xl"}>
             <Grid container spacing={2} mt={9}>
@@ -41,4 +41,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default HomePage;

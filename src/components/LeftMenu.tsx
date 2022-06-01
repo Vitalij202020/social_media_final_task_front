@@ -29,7 +29,7 @@ export default function LeftMenu() {
                     <ListItemIcon>
                         <HomeIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Home" />
+                    <ListItemText primary="HomePage" />
                 </ListItemButton>
                 <ListItemButton
                     selected={selectedIndex === 1}
