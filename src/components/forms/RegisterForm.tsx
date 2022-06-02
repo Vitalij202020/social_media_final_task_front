@@ -15,6 +15,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import * as yup from "yup";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
+import {IRegisterForm} from "../../types/IUser";
+import {RootState, useAppDispatch, useAppSelector} from "../../store/store";
+import {registerUserAction} from "../../store/user/userActions";
 
 
 const MyDiv = styled("div")(({theme}) => ({
@@ -38,22 +41,11 @@ const StyledButton = styled(Button)(({theme}) => ({
     margin: theme.spacing(3, 0, 2),
 }));
 
-interface IRegisterForm {
-    firstName: string;
-    lastName: string;
-    sex: string;
-    date: string;
-    nickName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-}
-
 const registerSchema = yup.object().shape({
     firstName: yup.string().min(2).max(20).required(),
     lastName: yup.string().min(2).max(20).required(),
     sex: yup.string().required(),
-    date: yup.string().required(),
+    dateOfBirth: yup.string().required(),
     nickName: yup.string().min(2).required(),
     email: yup.string().email().required(),
     password: yup.string().min(4).max(20).required(),
@@ -65,7 +57,9 @@ const registerSchema = yup.object().shape({
 
 
 const RegisterForm = () => {
-
+    const dispatch = useAppDispatch();
+    const {registerSuccess} = useAppSelector((state: RootState) => state.user);
+    console.log("---register-form-registerSuccess---", registerSuccess)
     const {
         control,
         handleSubmit,
@@ -73,7 +67,8 @@ const RegisterForm = () => {
     } = useForm<IRegisterForm>({resolver: yupResolver(registerSchema)});
 
     const onSubmit: SubmitHandler<IRegisterForm> = (data: IRegisterForm) => {
-        console.log(data);
+        console.log("---before---", data);
+        dispatch(registerUserAction(data))
     };
 
     return (
@@ -155,13 +150,13 @@ const RegisterForm = () => {
                             <Grid item xs={12} sm={6}>
                                 <Controller
                                     control={control}
-                                    name="date"
+                                    name="dateOfBirth"
                                     render={({field}) => (
                                         <TextField
                                             onChange={(e) => field.onChange(e)}
                                             value={field.value || ''}
-                                            error={!!errors.date?.message}
-                                            helperText={errors?.date?.message}
+                                            error={!!errors.dateOfBirth?.message}
+                                            helperText={errors?.dateOfBirth?.message}
                                             variant="outlined"
                                             type="date"
                                             label="Date"

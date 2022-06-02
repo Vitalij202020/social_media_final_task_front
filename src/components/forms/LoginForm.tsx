@@ -5,6 +5,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import {yupResolver} from "@hookform/resolvers/yup";
+import {ILoginForm} from "../../types/IUser";
 
 
 const MyDiv = styled("div")(({ theme }) => ({
@@ -22,11 +23,6 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
 }));
-
-interface ILoginForm {
-    email: string;
-    password: string;
-}
 
 const loginSchema = yup.object().shape({
     email: yup.string().email().required(),
