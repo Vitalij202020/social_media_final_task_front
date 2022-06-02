@@ -12,166 +12,236 @@ import {
 import React from 'react';
 import {styled} from "@mui/material/styles";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import * as yup from "yup";
+import {Controller, SubmitHandler, useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 
 
-const MyDiv = styled("div")(({ theme }) => ({
+const MyDiv = styled("div")(({theme}) => ({
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
 }));
 
-const MyForm = styled("form")(({ theme }) => ({
+const MyForm = styled("form")(({theme}) => ({
     width: "100%",
     marginTop: theme.spacing(3),
 }));
 
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
+const StyledAvatar = styled(Avatar)(({theme}) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
 }));
 
-const StyledButton = styled(Button)(({ theme }) => ({
+const StyledButton = styled(Button)(({theme}) => ({
     margin: theme.spacing(3, 0, 2),
 }));
 
-const onSubmit = () => {
-    console.log("---onsubmit---")
+interface IRegisterForm {
+    firstName: string;
+    lastName: string;
+    sex: string;
+    date: string;
+    nickName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
 }
 
+const registerSchema = yup.object().shape({
+    firstName: yup.string().min(2).max(20).required(),
+    lastName: yup.string().min(2).max(20).required(),
+    sex: yup.string().required(),
+    date: yup.string().required(),
+    nickName: yup.string().min(2).required(),
+    email: yup.string().email().required(),
+    password: yup.string().min(4).max(20).required(),
+    confirmPassword: yup.string()
+        .test('passwords-match', 'passwords must match', function (value) {
+            return this.parent.password === value
+        })
+});
+
+
 const RegisterForm = () => {
+
+    const {
+        control,
+        handleSubmit,
+        formState: {errors},
+    } = useForm<IRegisterForm>({resolver: yupResolver(registerSchema)});
+
+    const onSubmit: SubmitHandler<IRegisterForm> = (data: IRegisterForm) => {
+        console.log(data);
+    };
+
     return (
         <>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
+                <CssBaseline/>
                 <MyDiv>
                     <StyledAvatar color={"black"}>
                         <LockOutlinedIcon/>
                     </StyledAvatar>
                     <Typography component="h1" variant="h5">
-                        Sign up
+                        Sign Up
                     </Typography>
-                    <MyForm  onSubmit={onSubmit}>
+                    <MyForm onSubmit={handleSubmit(onSubmit)}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <TextField
-                                    error={false}
-                                    autoComplete="firstName"
+                                <Controller
+                                    control={control}
                                     name="firstName"
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    value="firstName"
-                                    // onChange={(e) => setFirstName(e.target.value)}
-                                    id="firstName"
-                                    label="First Name"
-                                    autoFocus
+                                    render={({field}) => (
+                                        <TextField
+                                            onChange={(e) => field.onChange(e)}
+                                            value={field.value || ''}
+                                            error={!!errors.firstName?.message}
+                                            helperText={errors?.firstName?.message}
+                                            variant="outlined"
+                                            type="text"
+                                            autoComplete="firstName"
+                                            fullWidth
+                                            label="First Name"
+                                            autoFocus
+                                        />
+                                    )}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    value="lastName"
-                                    // onChange={(e) => setLastName(e.target.value)}
-                                    id="lastName"
-                                    label="Last Name"
+                                <Controller
+                                    control={control}
                                     name="lastName"
-                                    autoComplete="lastName"
+                                    render={({field}) => (
+                                        <TextField
+                                            onChange={(e) => field.onChange(e)}
+                                            value={field.value || ''}
+                                            error={!!errors.lastName?.message}
+                                            helperText={errors?.lastName?.message}
+                                            variant="outlined"
+                                            type="text"
+                                            autoComplete="lastName"
+                                            label="Last Name"
+                                            fullWidth
+                                        />
+                                    )}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <FormControl required variant="outlined" fullWidth>
+                                <FormControl variant="outlined" fullWidth>
                                     <InputLabel htmlFor="sex">Sex</InputLabel>
-                                    <Select
-                                        required
-                                        native
-                                        value="sex"
-                                        // onChange={(e: any) => setSex(e.target.value)}
+                                    <Controller
+                                        control={control}
                                         name="sex"
-                                        label="sex"
-                                        inputProps={{
-                                            id: "sex",
-                                        }}
-                                    >
-                                        <option aria-label="None" value="" />
-                                        <option value={1}>Male</option>
-                                        <option value={2}>Female</option>
-                                        <option value={3}>Other</option>
-                                    </Select>
+                                        render={({field}) => (
+                                            <Select
+                                                required
+                                                error={!!errors.sex?.message}
+                                                native
+                                                value={field.value || ''}
+                                                onChange={(e) => field.onChange(e)}
+                                                label="sex"
+                                            >
+                                                <option aria-label="None" value=""/>
+                                                <option value={"male"}>Male</option>
+                                                <option value={"female"}>Female</option>
+                                                <option value={"other"}>Other</option>
+                                            </Select>
+                                        )}
+                                    />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField
-                                    variant="outlined"
+                                <Controller
+                                    control={control}
                                     name="date"
-                                    id="date"
-                                    label="Date"
-                                    type="date"
-                                    InputLabelProps={{ shrink: true }}
-                                    value="dateOfBirth"
-                                    // onChange={(e) => setDateOfBirth(e.target.value)}
-                                    fullWidth
-                                    required
+                                    render={({field}) => (
+                                        <TextField
+                                            onChange={(e) => field.onChange(e)}
+                                            value={field.value || ''}
+                                            error={!!errors.date?.message}
+                                            helperText={errors?.date?.message}
+                                            variant="outlined"
+                                            type="date"
+                                            label="Date"
+                                            InputLabelProps={{shrink: true}}
+                                            fullWidth
+                                        />
+                                    )}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    value="NickName"
-                                    // onChange={(e) => setEmail(e.target.value)}
-                                    id="email"
-                                    label="NickName"
+                                <Controller
+                                    control={control}
                                     name="nickName"
-                                    autoComplete="email"
-                                    type="email"
+                                    render={({field}) => (
+                                        <TextField
+                                            label="Nick Name"
+                                            onChange={(e) => field.onChange(e)}
+                                            value={field.value || ''}
+                                            fullWidth
+                                            error={!!errors.nickName?.message}
+                                            helperText={errors?.nickName?.message}
+                                            variant="outlined"
+                                            type="text"
+                                        />
+                                    )}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    value="email"
-                                    // onChange={(e) => setEmail(e.target.value)}
-                                    id="email"
-                                    label="Email Address"
+                                <Controller
+                                    control={control}
                                     name="email"
-                                    autoComplete="email"
-                                    type="email"
+                                    render={({field}) => (
+                                        <TextField
+                                            label="Email Address"
+                                            onChange={(e) => field.onChange(e)}
+                                            value={field.value || ''}
+                                            fullWidth
+                                            error={!!errors.email?.message}
+                                            helperText={errors?.email?.message}
+                                            variant="outlined"
+                                            type="text"
+                                            autoComplete="email"
+                                        />
+                                    )}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    value="password"
-                                    // onChange={(e) => setPassword(e.target.value)}
+                                <Controller
+                                    control={control}
                                     name="password"
-                                    label="Password"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="none"
-                                    // error={!isPasswordMatching}
+                                    render={({field}) => (
+                                        <TextField
+                                            label="Password"
+                                            onChange={(e) => field.onChange(e)}
+                                            value={field.value || ''}
+                                            fullWidth
+                                            error={!!errors.password?.message}
+                                            helperText={errors?.password?.message}
+                                            variant="outlined"
+                                            type="password"
+                                        />
+                                    )}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    value="confirmPassword"
-                                    // onChange={(e) => setConfirmPassword(e.target.value)}
+                                <Controller
+                                    control={control}
                                     name="confirmPassword"
-                                    label="Confirm Password"
-                                    type="password"
-                                    id="confirm-password"
-                                    autoComplete="none"
-                                    // error={!isPasswordMatching}
+                                    render={({field}) => (
+                                        <TextField
+                                            label="Confirm Password"
+                                            onChange={(e) => field.onChange(e)}
+                                            value={field.value || ''}
+                                            fullWidth
+                                            error={!!errors.confirmPassword?.message}
+                                            helperText={errors?.confirmPassword?.message}
+                                            variant="outlined"
+                                            type="password"
+                                        />
+                                    )}
                                 />
                             </Grid>
                         </Grid>

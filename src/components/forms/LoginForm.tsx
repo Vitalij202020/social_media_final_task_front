@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {Avatar, Button, Container, Grid, TextField, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import {yupResolver} from "@hookform/resolvers/yup";
 
 
 const MyDiv = styled("div")(({ theme }) => ({
@@ -20,11 +23,28 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
 }));
 
-const onSubmit = () => {
-    console.log("---onsubmit---")
+interface ILoginForm {
+    email: string;
+    password: string;
 }
 
-const LoginForm = () => {
+const loginSchema = yup.object().shape({
+    email: yup.string().email().required(),
+    password: yup.string().min(4).max(20).required(),
+});
+
+const LoginForm: FC = () => {
+
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ILoginForm>({resolver: yupResolver(loginSchema)});
+
+    const onSubmit: SubmitHandler<ILoginForm> = (data: ILoginForm) => {
+        console.log(data);
+    };
+
     return (
         <Container component="main" maxWidth="xs">
             <MyDiv>
@@ -32,38 +52,47 @@ const LoginForm = () => {
                     <LockOutlinedIcon />
                 </StyledAvatar>
                 <Typography component="h1" variant="h5">
-                    Login
+                    Sign In
                 </Typography>
-                <MyForm onSubmit={onSubmit}>
-                    <TextField
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required={true}
-                        value="email"
-                        // onChange={(e) => setEmail(e.target.value)}
-                        id="email"
-                        label="Email Address"
+                <MyForm onSubmit={handleSubmit(onSubmit)}>
+                    <Controller
+                        control={control}
                         name="email"
-                        autoComplete="email"
-                        autoFocus
-                        type="text"
+                        render={({ field }) => (
+                            <TextField
+                                label="Email Address"
+                                onChange={(e) => field.onChange(e)}
+                                value={field.value || ''}
+                                fullWidth
+                                error={!!errors.email?.message}
+                                helperText={ errors?.email?.message }
+                                variant="outlined"
+                                margin="normal"
+                                autoFocus
+                                type="text"
+                                autoComplete="email"
+                            />
+                        )}
                     />
-                    <TextField
-                        variant="outlined"
-                        fullWidth
-                        required
-                        label="Password"
-                        margin="normal"
+                    <Controller
+                        control={control}
                         name="password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        value="password"
-                        // onChange={(e) => setPassword(e.target.value)}
+                        render={({ field }) => (
+                            <TextField
+                                label="Password"
+                                onChange={(e) => field.onChange(e)}
+                                value={field.value || ''}
+                                fullWidth
+                                error={!!errors.password?.message}
+                                helperText={ errors?.password?.message }
+                                variant="outlined"
+                                margin="normal"
+                                type="password"
+                            />
+                        )}
                     />
-                    <Button variant="contained" type="submit" sx={{m: "16px 0", float: "right"}}>Login</Button>
-                    <Grid container>
+                    <Button fullWidth variant="contained" type="submit" sx={{m: "16px 0", float: "right"}}>Login</Button>
+                    <Grid container justifyContent={"center"}>
                         <Grid item>
                             <a href="#">Don't have an account? Register</a>
                         </Grid>
